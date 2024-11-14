@@ -25,9 +25,7 @@ class HomeViewModel: ObservableObject {
     @Published var stand: Int = 0
     @Published var activities = [Activity]()
     @Published var count = 0
-    
-    @Published var activityDictionary: [String: Activity] = [:]
-    
+        
     init() {
         Task {
             do {
@@ -41,6 +39,23 @@ class HomeViewModel: ObservableObject {
     func updateUI(){
         fetchTodaySteps()
         fetchTodayCaloriesBurned()
+        fetchTodayStandHours()
+        fetchTodayExerciseTime()
+        fetchTodayHeartRate()
+        fetchTodayIrregularHeartRythmEvents()
+        // fetchTodayRestingHeartRate()
+    }
+    
+    func fetchTodayRestingHeartRate(){
+        healthManager.fetchTodayRestingHeartRate {_ in }
+    }
+    
+    func fetchTodayIrregularHeartRythmEvents() {
+        healthManager.fetchTodayIrregularHeartRateRyhtmEvent {_ in }
+    }
+    
+    func fetchTodayHeartRate() {
+        healthManager.fetchTodayHeartRate {_ in }
     }
     
     func fetchTodayCaloriesBurned() {
@@ -51,15 +66,12 @@ class HomeViewModel: ObservableObject {
                     self.calories = Int(calories)
                     let activity = Activity(id: UUID(), title: "Today Calories", subtitle: "Goal: 500", image: "flame", current: "\(Int(calories))")
                     
-                    
                     let row = self.activities.firstIndex(where: {$0.title == activity.title})
                     if(row == nil) {
                         self.activities.append(activity)
-                        self.activityDictionary["todayCalories"] = activity
                     } else {
                         self.activities.remove(at: row!)
                         self.activities.append( activity)
-                        self.activityDictionary["todayCalories"]?.current = activity.current
                     }
                 }
             case .failure(let failure):
@@ -103,12 +115,9 @@ class HomeViewModel: ObservableObject {
                     
                     if(row == nil) {
                         self.activities.append(activity)
-                        self.activityDictionary["todaySteps"] = activity
                     } else {
                         self.activities.remove(at: row!)
                         self.activities.append(activity)
-                        self.activityDictionary.removeValue(forKey: "todaySteps")
-                        self.activityDictionary["todaySteps"] = activity
                     }
                 }
             case .failure(let failure):

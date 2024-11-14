@@ -31,28 +31,107 @@ class HealthManager: ObservableObject {
     }
     
     func requestHealthKitAccess() async throws {
-        let steps = HKQuantityType(.stepCount)
-        let calories = HKQuantityType(.activeEnergyBurned)
-        let exercise = HKQuantityType(.appleExerciseTime)
-        let stand = HKCategoryType(.appleStandHour)
+        // QuantityTypes
+        let steps               = HKQuantityType(.stepCount)
+        let calories            = HKQuantityType(.activeEnergyBurned)
+        let exercise            = HKQuantityType(.appleExerciseTime)
+        let heartRate           = HKQuantityType(.heartRate)
+        let restingHeartRate    = HKQuantityType(.restingHeartRate)
         
-        let healthTypes: Set = [steps, calories, exercise, stand]
+        // CategoryTypes
+        let stand                           = HKCategoryType(.appleStandHour)
+        let irregularHeartRateRythmEvent    = HKCategoryType(.irregularHeartRhythmEvent)
+
+        // Set der abgefragten Daten
+        let healthTypes: Set = [steps, calories, exercise, stand, heartRate, irregularHeartRateRythmEvent, restingHeartRate]
         
+        // Anfrage der ausgewählten Healthtypes
+        // Öffnet HealthApp beim ersten Öffnen der SmartHealthCare App
+        // und forder User auf Daten zur Abfrage freizugeben
         try await healthstore.requestAuthorization(toShare: [], read: healthTypes)
+    }
+    
+    func fetchTodayRestingHeartRate(completion: @escaping(Result<[Double], Error>) -> Void) {
+        let restingHeartRate = HKQuantityType(.restingHeartRate)
+        let predicate = HKQuery.predicateForSamples(withStart: .startOfDate, end: Date())
+        let query = HKSampleQuery(sampleType: restingHeartRate, predicate: predicate, limit: HKObjectQueryNoLimit, sortDescriptors: nil) { _, results,
+            error in guard let samples = results as? [HKQuantitySample], error == nil else {
+                completion(.failure(NSError()))
+                return
+            }
+                        
+            let restingHeartRateThreshold = 130.0  // Example threshold for resting heart rate (below 60 bpm is often considered resting)
+            let restingHeartRates = samples.filter { sample in
+                // Assuming values under 60 bpm are considered "resting"
+                sample.quantity.doubleValue(for: .count().unitDivided(by: .minute())) < restingHeartRateThreshold
+            }
+                                
+            if restingHeartRates.isEmpty {
+                completion(.success([]))  // No resting heart rate samples found
+            } else {
+                // Extract the heart rate values from the samples
+                let heartRates = restingHeartRates.map { sample in
+                    sample.quantity.doubleValue(for: .count().unitDivided(by: .minute()))
+                }
+                completion(.success(heartRates))  // Return an array of resting heart rates
+            }
+        }
+        
+        // Execute the query
+        healthstore.execute(query)
+    }
+    
+    func fetchTodayIrregularHeartRateRyhtmEvent(completion: @escaping(Result<Double, Error>) -> Void) {
+        let events = HKCategoryType(.irregularHeartRhythmEvent)
+        let predicate = HKQuery.predicateForSamples(withStart: .startOfDate, end: Date())
+        let query = HKSampleQuery(sampleType: events, predicate: predicate, limit: HKObjectQueryNoLimit, sortDescriptors: nil) { _, results,
+            error in guard let samples = results as? [HKCategorySample], error == nil else {
+                completion(.failure(NSError()))
+                return
+            }
+            
+            if(samples.count == 0){
+                completion(.success(0.0))
+            } else {
+                let standCount = samples.filter({ $0.value == 0}).count
+                completion(.success(Double(standCount)))
+            }
+        }
+        
+        healthstore.execute(query)
     }
     
     func fetchTodaySteps(completion: @escaping(Result<Activity, Error>) -> Void) {
         let steps = HKQuantityType(.stepCount)
-        let predicate = HKQuery.predicateForSamples(withStart: Calendar.current.startOfDay(for: Date()), end: Date())
-        let query = HKStatisticsQuery(quantityType: steps, quantitySamplePredicate: predicate) { _, result, error in guard let quantity = result?.sumQuantity(), error == nil else {
-            completion(.failure(NSError()))
+        let predicate = HKQuery.predicateForSamples(withStart: .startOfDate, end: Date())
+//        let query = HKStatisticsQuery(quantityType: steps, quantitySamplePredicate: predicate) { _, result, error in guard let quantity = result?.sumQuantity(), error == nil else {
+//            completion(.failure(NSError()))
+//                return
+//            }
+//            
+//            var date = Date.startOfDate
+//            
+//            print(quantity)
+//            
+//            let stepCount = quantity.doubleValue(for: .count())
+//            let activity = Activity(id: UUID(), title: "Today Steps", subtitle: "Goal: 800", image: "figure.walk", current: "\(Int(stepCount))")
+//            completion(.success(activity))
+//        }
+        
+        let query = HKSampleQuery(sampleType: steps, predicate: predicate, limit: HKObjectQueryNoLimit, sortDescriptors: nil) { _, results,
+            error in guard let samples = results as? [HKQuantitySample], error == nil else {
+                completion(.failure(NSError()))
                 return
             }
-            
-            let stepCount = quantity.doubleValue(for: .count())
+                        
+            let stepCount = samples.filter { $0.device?.model == "Watch" }.map { $0.quantity.doubleValue(for: .count())}.reduce(0.0) { (result, number) in
+                return result + number
+            }
+        
             let activity = Activity(id: UUID(), title: "Today Steps", subtitle: "Goal: 800", image: "figure.walk", current: "\(Int(stepCount))")
             completion(.success(activity))
         }
+        
         
         healthstore.execute(query)
     }
@@ -97,9 +176,6 @@ class HealthManager: ObservableObject {
                 completion(.failure(NSError()))
                 return
             }
-        
-            print(samples)
-            print(samples.map({ $0.value }))
             
             if(samples.count == 0){
                 completion(.success(0.0))
@@ -112,5 +188,27 @@ class HealthManager: ObservableObject {
         healthstore.execute(query)
     }
     
+    func fetchTodayHeartRate(completion: @escaping(Result<[Double], Error>) -> Void) {
+        // Create the heart rate sample type
+        let heartRateType = HKQuantityType(.heartRate)
+        let predicate = HKQuery.predicateForSamples(withStart: .startOfDate, end: Date())
+        let query = HKSampleQuery(sampleType: heartRateType, predicate: predicate, limit: HKObjectQueryNoLimit, sortDescriptors: nil) { _, results,
+            error in guard let samples = results as? [HKQuantitySample], error == nil else {
+                completion(.failure(NSError()))
+                return
+            }
+            
+            if samples.isEmpty {
+                completion(.success([]))  // No heart rate samples for today
+            } else {
+                // Extract heart rate values in bpm (beats per minute) from the samples
+                let heartRates = samples.map { $0.quantity.doubleValue(for: .count().unitDivided(by: .minute())) }
+                completion(.success(heartRates))  // Return an array of heart rates
+            }
+        }
+        
+        // Execute the query
+        healthstore.execute(query)
+    }
 }
 
