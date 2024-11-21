@@ -29,7 +29,6 @@ struct HomeView: View {
                                 Text("Calories")
                                     .font(.callout)
                                     .bold()
-                                    .foregroundColor(.white)
                                 Text("\(viewModel.calories)")
                                     .bold()
                             }
@@ -40,7 +39,6 @@ struct HomeView: View {
                                 Text("Active")
                                     .font(.callout)
                                     .bold()
-                                    .foregroundColor(.white)
                                 Text("\(viewModel.exercise)")
                                     .bold()
                                 
@@ -52,7 +50,6 @@ struct HomeView: View {
                                 Text("Stand")
                                     .font(.callout)
                                     .bold()
-                                    .foregroundColor(.white)
                                 Text("\(viewModel.stand)")
                                     .bold()
                                 

@@ -15,9 +15,16 @@ extension Date {
     }
 }
 
+struct stepData {
+    let stepValue: Double
+    let startDate: String
+    let endDate: String
+}
+
 class HealthManager: ObservableObject {
     static let shared = HealthManager()
     let healthstore = HKHealthStore()
+    let dateFormatter = DateFormatter()
     
     init() {
         Task {
@@ -37,7 +44,7 @@ class HealthManager: ObservableObject {
         let exercise            = HKQuantityType(.appleExerciseTime)
         let heartRate           = HKQuantityType(.heartRate)
         let restingHeartRate    = HKQuantityType(.restingHeartRate)
-        
+        dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
         // CategoryTypes
         let stand                           = HKCategoryType(.appleStandHour)
         let irregularHeartRateRythmEvent    = HKCategoryType(.irregularHeartRhythmEvent)
@@ -101,40 +108,44 @@ class HealthManager: ObservableObject {
         healthstore.execute(query)
     }
     
-    func fetchTodaySteps(completion: @escaping(Result<Activity, Error>) -> Void) {
+    
+    
+    func fetchTodaySteps(completion: @escaping(Result<(Activity, [stepData]), Error>) -> Void) {
         let steps = HKQuantityType(.stepCount)
         let predicate = HKQuery.predicateForSamples(withStart: .startOfDate, end: Date())
-//        let query = HKStatisticsQuery(quantityType: steps, quantitySamplePredicate: predicate) { _, result, error in guard let quantity = result?.sumQuantity(), error == nil else {
-//            completion(.failure(NSError()))
-//                return
-//            }
-//            
-//            var date = Date.startOfDate
-//            
-//            print(quantity)
-//            
-//            let stepCount = quantity.doubleValue(for: .count())
-//            let activity = Activity(id: UUID(), title: "Today Steps", subtitle: "Goal: 800", image: "figure.walk", current: "\(Int(stepCount))")
-//            completion(.success(activity))
-//        }
         
-        let query = HKSampleQuery(sampleType: steps, predicate: predicate, limit: HKObjectQueryNoLimit, sortDescriptors: nil) { _, results,
-            error in guard let samples = results as? [HKQuantitySample], error == nil else {
+        let query = HKSampleQuery(sampleType: steps, predicate: predicate, limit: HKObjectQueryNoLimit, sortDescriptors: nil) { _, results, error in
+            guard let samples = results as? [HKQuantitySample], error == nil else {
                 completion(.failure(NSError()))
                 return
             }
-                        
-            let stepCount = samples.filter { $0.device?.model == "Watch" }.map { $0.quantity.doubleValue(for: .count())}.reduce(0.0) { (result, number) in
-                return result + number
+            
+            let watchValues = samples.filter { $0.device?.model == "Watch" }
+            
+            var stepCount = 0.0
+            let stepValues = watchValues.map { watchValue in
+                let stepValue = watchValue.quantity.doubleValue(for: .count())
+                stepCount += stepValue
+                
+                // Create a stepData instance for each watch value
+                return stepData(
+                    stepValue: stepValue, // Get the step count
+                    startDate: self.dateFormatter.string(from: watchValue.startDate), // Format the start date
+                    endDate: self.dateFormatter.string(from: watchValue.endDate) // Format the end date
+                )
             }
-        
+            
+            print(stepValues)
+            
             let activity = Activity(id: UUID(), title: "Today Steps", subtitle: "Goal: 800", image: "figure.walk", current: "\(Int(stepCount))")
-            completion(.success(activity))
+            
+            // Return the activity and the step values as a tuple
+            completion(.success((activity, stepValues)))
         }
-        
         
         healthstore.execute(query)
     }
+
     
     func fetchTodayCaloriesBurned(completion: @escaping(Result<Double, Error>) -> Void) {
         let calories = HKQuantityType(.activeEnergyBurned)
@@ -211,4 +222,3 @@ class HealthManager: ObservableObject {
         healthstore.execute(query)
     }
 }
-

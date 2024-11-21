@@ -109,7 +109,7 @@ class HomeViewModel: ObservableObject {
     func fetchTodaySteps() {
         healthManager.fetchTodaySteps { result in
             switch result {
-            case .success(let activity):
+            case .success((let activity, _)):
                 DispatchQueue.main.async {
                     let row = self.activities.firstIndex(where: {$0.title == activity.title})
                     
