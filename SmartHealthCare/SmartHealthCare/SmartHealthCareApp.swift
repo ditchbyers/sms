@@ -9,9 +9,9 @@ import SwiftUI
 
 @main
 struct SmartHealthCareApp: App {
-    var body: some Scene {
-        WindowGroup {
-            SMCTabView()
-        }
+  var body: some Scene {
+    WindowGroup {
+      SMCTabView()
     }
+  }
 }

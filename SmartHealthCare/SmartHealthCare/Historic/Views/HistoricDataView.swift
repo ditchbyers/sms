@@ -1,60 +1,20 @@
-import SwiftUI
 import Charts
+import Foundation
+import SwiftUI
+import SwiftUICharts
 
 struct HistoricDataView: View {
-    
-    @State private var selectedType: String = "Apple"
-    let dataSource = ["Apple", "Mango", "Orange", "Banana", "Kiwi", "Watermelon"]
-    
-    @State private var selectedStartDate = Date()
-    @State private var selectedEndDate = Date()
+  @StateObject var viewModel: HistoricViewModel
+  @State private var chartXSelection: Date? = nil
 
-    var body: some View {
-        ScrollView {
-            VStack(alignment: .leading) {
-                Text("Charts")
-                    .font(.largeTitle)
-                    .bold()
-                    .frame(maxWidth: .infinity, alignment: .leading)
-
-                // Horizontal container
-                HStack(spacing: 20) {
-                    // Picker on the left side with a fixed height and 50% width
-                    Picker("Data Source", selection: $selectedType) {
-                        ForEach(dataSource, id: \.self) { data in
-                            Text(data)
-                        }
-                    }
-                    .padding()
-                    .background(Color(UIColor.systemGray6))
-                    .cornerRadius(8)
-                    .frame(height: 44)  // Same height as DatePicker
-
-
-                    // DatePicker stack on the right side
-                    VStack(alignment: .leading) {
-                        DatePicker("", selection: $selectedStartDate, displayedComponents: .date)
-                            .labelsHidden()
-                            .background((Color(UIColor.secondarySystemBackground)))
-                            .cornerRadius(8)
-                        DatePicker("", selection: $selectedEndDate, displayedComponents: .date)
-                            .labelsHidden()
-                            .background(Color(UIColor.systemGray6))
-                            .cornerRadius(8)
-                    }
-                    .frame(maxWidth: .infinity)  // Takes up the remaining space
-                }
-                .padding()// Padding for the entire HStack
-                
-//                Chart {
-//                    
-//                }
-            }
-            .padding()
-        }
+  var body: some View {
+    VStack(alignment: .leading) {
+      Heading(title: "Charts")
+      ChartPicker(viewModel: viewModel)
+      ChartButtons(viewModel: viewModel, chartXSelection: $chartXSelection)
+      ChartView(viewModel: viewModel, chartXSelection: $chartXSelection)
     }
-}
-
-#Preview {
-    HistoricDataView()
+    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+    .padding(.horizontal)
+  }
 }

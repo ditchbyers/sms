@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		94509EF82CEF813C00BA5869 /* MijickCalendarView in Frameworks */ = {isa = PBXBuildFile; productRef = 94509EF72CEF813C00BA5869 /* MijickCalendarView */; };
+		940CC8032CF8BB7100FDF059 /* SwiftUIGraphs in Frameworks */ = {isa = PBXBuildFile; productRef = 940CC8022CF8BB7100FDF059 /* SwiftUIGraphs */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -27,7 +27,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				94509EF82CEF813C00BA5869 /* MijickCalendarView in Frameworks */,
+				940CC8032CF8BB7100FDF059 /* SwiftUIGraphs in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -70,7 +70,7 @@
 			);
 			name = SmartHealthCare;
 			packageProductDependencies = (
-				94509EF72CEF813C00BA5869 /* MijickCalendarView */,
+				940CC8022CF8BB7100FDF059 /* SwiftUIGraphs */,
 			);
 			productName = SmartHealthCare;
 			productReference = 944C1A2A2CDCE9CD00EAF0D1 /* SmartHealthCare.app */;
@@ -101,7 +101,7 @@
 			mainGroup = 944C1A212CDCE9CD00EAF0D1;
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
-				94509EF62CEF813C00BA5869 /* XCRemoteSwiftPackageReference "CalendarView" */,
+				940CC8012CF8BB7100FDF059 /* XCRemoteSwiftPackageReference "SwiftUIGraphs" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 944C1A2B2CDCE9CD00EAF0D1 /* Products */;
@@ -269,10 +269,10 @@
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
-				"IPHONEOS_DEPLOYMENT_TARGET[sdk=iphoneos*]" = 15.8;
+				"IPHONEOS_DEPLOYMENT_TARGET[sdk=iphoneos*]" = 18.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -302,10 +302,10 @@
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
-				"IPHONEOS_DEPLOYMENT_TARGET[sdk=iphoneos*]" = 15.8;
+				"IPHONEOS_DEPLOYMENT_TARGET[sdk=iphoneos*]" = 18.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -343,21 +343,21 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		94509EF62CEF813C00BA5869 /* XCRemoteSwiftPackageReference "CalendarView" */ = {
+		940CC8012CF8BB7100FDF059 /* XCRemoteSwiftPackageReference "SwiftUIGraphs" */ = {
 			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/Mijick/CalendarView.git";
+			repositoryURL = "https://github.com/DominikButz/SwiftUIGraphs.git";
 			requirement = {
 				kind = upToNextMajorVersion;
-				minimumVersion = 1.0.0;
+				minimumVersion = 1.1.2;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		94509EF72CEF813C00BA5869 /* MijickCalendarView */ = {
+		940CC8022CF8BB7100FDF059 /* SwiftUIGraphs */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 94509EF62CEF813C00BA5869 /* XCRemoteSwiftPackageReference "CalendarView" */;
-			productName = MijickCalendarView;
+			package = 940CC8012CF8BB7100FDF059 /* XCRemoteSwiftPackageReference "SwiftUIGraphs" */;
+			productName = SwiftUIGraphs;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
